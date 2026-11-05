@@ -262,12 +262,12 @@ h3 {
 .card-list {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 20px;
     width: max-content;
     min-width: 100%;
     min-height: 300px;
-    padding: 30px 24px;
+    padding: 0 24px;
 }
 
 .card-list.is-drag-over {
@@ -277,7 +277,10 @@ h3 {
 .card {
     position: relative;
     z-index: 1;
+    display: flex;
     flex: 0 0 250px;
+    flex-direction: column;
+    align-self: stretch;
     padding: 18px;
     border: 1px solid var(--color-border);
     border-radius: 12px;
@@ -342,7 +345,7 @@ h3 {
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: auto;
     padding-top: 14px;
     border-top: 1px solid var(--color-border);
 }
@@ -435,6 +438,10 @@ h3 {
     color: var(--color-blue);
 }
 
+.card.is-finished.is-overdue .timer-display {
+    color: var(--color-red);
+}
+
 .card.is-finished .timer-button {
     background: var(--color-red);
 }
@@ -466,7 +473,7 @@ h3 {
 
     .card-list {
         min-height: 260px;
-        padding: 24px 16px;
+        padding: 0 16px;
     }
 
     .add-card-button {

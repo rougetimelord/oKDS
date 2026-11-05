@@ -47,7 +47,7 @@ function formatTime(milliseconds) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
-  return `${isNegative ? "-" : ""}${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  return `${isNegative ? "-" : ""}${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 function renderTimer(card) {
@@ -57,11 +57,14 @@ function renderTimer(card) {
   const button = card.querySelector(".timer-button");
   const title = card.querySelector("h3").textContent;
   const finishButton = card.querySelector(".finish-button");
+  const timerDisplay = card.querySelector(".timer-display");
 
-  card.querySelector(".timer-display").textContent = formatTime(remaining);
+  const displayTime = timer.finished ? timer.estimatedTimeMs - remaining : remaining;
+  timerDisplay.textContent = formatTime(displayTime);
+  timerDisplay.setAttribute("aria-label", timer.finished ? "Total time taken" : "Time remaining");
   card.classList.toggle("is-overdue", remaining < 0);
   card.classList.toggle("is-finished", timer.finished);
-  button.textContent = timer.finished ? "×" : active ? "Ⅱ" : "▶";
+  button.textContent = timer.finished ? "×" : active ? "⏸" : "▶";
   button.classList.toggle("delete-button", timer.finished);
   button.setAttribute(
     "aria-label",
