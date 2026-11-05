@@ -330,6 +330,7 @@ h3 {
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: -0.025em;
+    cursor: text;
 }
 
 .card p {
@@ -339,6 +340,69 @@ h3 {
     line-height: 1.55;
 }
 
+.card .card-description {
+    min-height: 1.55em;
+    cursor: text;
+}
+
+.card .card-description:empty::before {
+    color: var(--color-muted);
+    content: "Click to add a description";
+    opacity: 0.75;
+}
+
+.ticket-inline-edit-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: start;
+    gap: 6px;
+    margin: 0 0 7px;
+}
+
+.ticket-inline-edit-form[hidden] {
+    display: none;
+}
+
+.ticket-inline-edit-form input,
+.ticket-inline-edit-form textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 0.78rem;
+}
+
+.ticket-inline-edit-form textarea {
+    grid-column: 1 / -1;
+    resize: vertical;
+}
+
+.ticket-inline-edit-form input:focus,
+.ticket-inline-edit-form textarea:focus {
+    border-color: var(--color-green);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 15%, transparent);
+}
+
+.ticket-inline-edit-form button {
+    min-height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-white);
+    color: var(--color-muted);
+    font: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.ticket-inline-edit-form button:hover {
+    border-color: var(--color-green);
+    color: var(--color-green);
+}
+
 .card .card-error {
     margin: 12px 0 0;
     color: var(--color-red);
@@ -346,15 +410,85 @@ h3 {
     line-height: 1.45;
 }
 
+.card-estimate-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 12px;
+}
+
 .card .card-estimate {
     display: inline-block;
-    margin-top: 12px;
     padding: 5px 8px;
     border-radius: 6px;
     background: var(--color-surface);
     color: var(--color-muted);
     font-size: 0.72rem;
     font-weight: 600;
+}
+
+.estimate-edit-button,
+.estimate-edit-form button {
+    min-height: 28px;
+    padding: 0 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-white);
+    color: var(--color-muted);
+    font: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.estimate-edit-button {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.card-estimate-row:hover .estimate-edit-button,
+.estimate-edit-button:focus-visible {
+    opacity: 1;
+}
+
+.estimate-edit-button:hover,
+.estimate-edit-form button:hover {
+    border-color: var(--color-green);
+    color: var(--color-green);
+}
+
+.estimate-edit-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.estimate-edit-form[hidden],
+.card-estimate-row[hidden] {
+    display: none;
+}
+
+.estimate-edit-input {
+    width: 72px;
+    height: 28px;
+    padding: 0 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.estimate-edit-input:focus,
+.estimate-edit-button:focus-visible,
+.estimate-edit-form button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-green) 25%, transparent);
+    outline-offset: 2px;
 }
 
 .card.is-overdue {
