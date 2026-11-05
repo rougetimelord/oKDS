@@ -8,6 +8,7 @@ const cardCount = document.querySelector(".card-count");
 const cardTotalTime = document.querySelector(".card-total-time");
 const cardTimers = new WeakMap();
 const storageKey = "okds-tickets";
+const timerRefreshIntervalMs = 1000;
 const storageStatus = document.createElement("p");
 const dropIndicator = document.createElement("div");
 let draggedCard = null;
@@ -188,7 +189,7 @@ function toggleTimer(card) {
     board.append(card);
     scrollRailToEnd("smooth");
     timer.startedAt = Date.now();
-    timer.intervalId = window.setInterval(() => renderTimer(card), 200);
+    timer.intervalId = window.setInterval(() => renderTimer(card), timerRefreshIntervalMs);
     activeTimerCard = card;
   } else {
     pauseTimer(card);
@@ -276,6 +277,74 @@ async function deleteCard(card, button) {
   }
 }
 
+function createEditor(display, options, onSave) {
+  const editorForm = document.createElement("form");
+  editorForm.className = options.className;
+  editorForm.hidden = true;
+
+  const input = document.createElement(options.multiline ? "textarea" : "input");
+  input.setAttribute("aria-label", options.label);
+  if (options.multiline) {
+    input.rows = 3;
+  } else {
+    input.type = options.type ?? "text";
+    input.required = Boolean(options.required || options.requiredMessage);
+    if (options.min !== undefined) input.min = String(options.min);
+    if (options.step !== undefined) input.step = String(options.step);
+  }
+  if (options.maxLength !== undefined) input.maxLength = options.maxLength;
+  if (options.inputClass) input.className = options.inputClass;
+  editorForm.append(input);
+
+  const saveButton = document.createElement("button");
+  saveButton.type = "submit";
+  saveButton.textContent = "Save";
+  editorForm.append(saveButton);
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.textContent = "Cancel";
+  editorForm.append(closeButton);
+
+  const close = () => {
+    editorForm.hidden = true;
+    display.hidden = false;
+    (options.focusTarget ?? display).focus();
+  };
+  const open = (value) => {
+    input.value = value;
+    display.hidden = true;
+    editorForm.hidden = false;
+    input.focus();
+    input.select?.();
+  };
+
+  input.addEventListener("input", () => input.setCustomValidity(""));
+  closeButton.addEventListener("click", close);
+  editorForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    input.value = input.value.trim();
+    if (options.requiredMessage && !input.value) {
+      input.setCustomValidity(options.requiredMessage);
+    }
+    if (!editorForm.reportValidity()) return;
+    onSave(input.value);
+    close();
+  });
+
+  return { form: editorForm, input, open };
+}
+
+function enableClickEditing(element, openEditor) {
+  element.addEventListener("click", openEditor);
+  element.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openEditor();
+    }
+  });
+}
+
 function createCard(title, description, estimate) {
   const card = document.createElement("article");
   card.className = "card";
@@ -290,29 +359,6 @@ function createCard(title, description, estimate) {
   heading.setAttribute("aria-label", `Edit title: ${title}`);
   card.append(heading);
 
-  const titleForm = document.createElement("form");
-  titleForm.className = "ticket-inline-edit-form ticket-title-edit-form";
-  titleForm.hidden = true;
-
-  const titleInput = document.createElement("input");
-  titleInput.type = "text";
-  titleInput.maxLength = 100;
-  titleInput.required = true;
-  titleInput.setAttribute("aria-label", `Ticket title for ${title}`);
-  titleInput.addEventListener("input", () => titleInput.setCustomValidity(""));
-  titleForm.append(titleInput);
-
-  const saveTitleButton = document.createElement("button");
-  saveTitleButton.type = "submit";
-  saveTitleButton.textContent = "Save";
-  titleForm.append(saveTitleButton);
-
-  const cancelTitleButton = document.createElement("button");
-  cancelTitleButton.type = "button";
-  cancelTitleButton.textContent = "Cancel";
-  titleForm.append(cancelTitleButton);
-  card.append(titleForm);
-
   const details = document.createElement("p");
   details.className = "card-description";
   details.textContent = description;
@@ -320,104 +366,39 @@ function createCard(title, description, estimate) {
   details.setAttribute("aria-label", description ? "Edit description" : "Add a description");
   card.append(details);
 
-  const descriptionForm = document.createElement("form");
-  descriptionForm.className = "ticket-inline-edit-form ticket-description-edit-form";
-  descriptionForm.hidden = true;
-
-  const descriptionInput = document.createElement("textarea");
-  descriptionInput.maxLength = 240;
-  descriptionInput.rows = 3;
-  descriptionInput.setAttribute("aria-label", `Description for ${title}`);
-  descriptionForm.append(descriptionInput);
-
-  const saveDescriptionButton = document.createElement("button");
-  saveDescriptionButton.type = "submit";
-  saveDescriptionButton.textContent = "Save";
-  descriptionForm.append(saveDescriptionButton);
-
-  const cancelDescriptionButton = document.createElement("button");
-  cancelDescriptionButton.type = "button";
-  cancelDescriptionButton.textContent = "Cancel";
-  descriptionForm.append(cancelDescriptionButton);
-  card.append(descriptionForm);
-
-  const openTitleEditor = () => {
-    titleInput.value = heading.textContent;
-    heading.hidden = true;
-    titleForm.hidden = false;
-    titleInput.focus();
-    titleInput.select();
-  };
-  const closeTitleEditor = (focusHeading) => {
-    titleForm.hidden = true;
-    heading.hidden = false;
-    if (focusHeading) {
-      heading.focus();
-    }
-  };
-  heading.addEventListener("click", openTitleEditor);
-  heading.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openTitleEditor();
-    }
-  });
-  cancelTitleButton.addEventListener("click", () => closeTitleEditor(true));
-  titleForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    titleInput.value = titleInput.value.trim();
-    if (!titleInput.value) {
-      titleInput.setCustomValidity("Please enter a title.");
-      titleInput.reportValidity();
-      return;
-    }
-
-    heading.textContent = titleInput.value;
-    heading.setAttribute("aria-label", `Edit title: ${titleInput.value}`);
-    const estimateMinutes = cardTimers.get(card).estimatedTimeMs / 60_000;
-    const estimateLabel = `${estimateMinutes} ${estimateMinutes === 1 ? "minute" : "minutes"}`;
-    card.setAttribute("aria-label", `${titleInput.value}, estimated ${estimateLabel}`);
+  const titleEditor = createEditor(heading, {
+    className: "ticket-inline-edit-form ticket-title-edit-form",
+    label: `Ticket title for ${title}`,
+    maxLength: 100,
+    requiredMessage: "Please enter a title.",
+  }, (newTitle) => {
+    heading.textContent = newTitle;
+    heading.setAttribute("aria-label", `Edit title: ${newTitle}`);
+    const minutes = cardTimers.get(card).estimatedTimeMs / 60_000;
+    card.setAttribute("aria-label", `${newTitle}, estimated ${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
     details.setAttribute("aria-label", details.textContent ? "Edit description" : "Add a description");
-    descriptionInput.setAttribute("aria-label", `Description for ${titleInput.value}`);
-    editEstimateButton.setAttribute("aria-label", `Edit estimated time for ${titleInput.value}`);
+    descriptionEditor.input.setAttribute("aria-label", `Description for ${newTitle}`);
+    editEstimateButton.setAttribute("aria-label", `Edit estimated time for ${newTitle}`);
     renderTimer(card);
-    closeTitleEditor(true);
     saveTickets();
   });
+  card.append(titleEditor.form);
+  enableClickEditing(heading, () => titleEditor.open(heading.textContent));
 
-  const openDescriptionEditor = () => {
-    descriptionInput.value = details.textContent;
-    details.hidden = true;
-    descriptionForm.hidden = false;
-    descriptionInput.focus();
-  };
-  const closeDescriptionEditor = (focusDetails) => {
-    descriptionForm.hidden = true;
-    details.hidden = false;
-    if (focusDetails) {
-      details.focus();
-    }
-  };
-  details.addEventListener("click", openDescriptionEditor);
-  details.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openDescriptionEditor();
-    }
-  });
-  cancelDescriptionButton.addEventListener("click", () => closeDescriptionEditor(true));
-  descriptionForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    details.textContent = descriptionInput.value.trim();
-    details.setAttribute("aria-label", details.textContent ? "Edit description" : "Add a description");
-    closeDescriptionEditor(true);
+  const descriptionEditor = createEditor(details, {
+    className: "ticket-inline-edit-form ticket-description-edit-form",
+    label: `Description for ${title}`,
+    maxLength: 240,
+    multiline: true,
+  }, (newDescription) => {
+    details.textContent = newDescription;
+    details.setAttribute("aria-label", newDescription ? "Edit description" : "Add a description");
     saveTickets();
   });
-
+  card.append(descriptionEditor.form);
+  enableClickEditing(details, () => descriptionEditor.open(details.textContent));
   card.addEventListener("click", (event) => {
-    if (event.target === card) {
-      openDescriptionEditor();
-    }
+    if (event.target === card) descriptionEditor.open(details.textContent);
   });
 
   const time = document.createElement("span");
@@ -436,55 +417,20 @@ function createCard(title, description, estimate) {
   estimateRow.append(editEstimateButton);
   card.append(estimateRow);
 
-  const estimateForm = document.createElement("form");
-  estimateForm.className = "estimate-edit-form";
-  estimateForm.hidden = true;
-
-  const estimateInput = document.createElement("input");
-  estimateInput.className = "estimate-edit-input";
-  estimateInput.type = "number";
-  estimateInput.min = "1";
-  estimateInput.step = "1";
-  estimateInput.required = true;
-  estimateInput.setAttribute("aria-label", `Estimated time in minutes for ${title}`);
-  estimateForm.append(estimateInput);
-
-  const saveEstimateButton = document.createElement("button");
-  saveEstimateButton.type = "submit";
-  saveEstimateButton.textContent = "Save";
-  estimateForm.append(saveEstimateButton);
-
-  const cancelEstimateButton = document.createElement("button");
-  cancelEstimateButton.type = "button";
-  cancelEstimateButton.textContent = "Cancel";
-  estimateForm.append(cancelEstimateButton);
-
+  const estimateEditor = createEditor(estimateRow, {
+    className: "estimate-edit-form",
+    inputClass: "estimate-edit-input",
+    label: `Estimated time in minutes for ${title}`,
+    type: "number",
+    min: 1,
+    step: 1,
+    required: true,
+    focusTarget: editEstimateButton,
+  }, (value) => updateEstimatedTime(card, Number(value)));
+  card.append(estimateEditor.form);
   editEstimateButton.addEventListener("click", () => {
-    estimateInput.value = String(cardTimers.get(card).estimatedTimeMs / 60_000);
-    estimateRow.hidden = true;
-    estimateForm.hidden = false;
-    estimateInput.focus();
-    estimateInput.select();
+    estimateEditor.open(String(cardTimers.get(card).estimatedTimeMs / 60_000));
   });
-
-  cancelEstimateButton.addEventListener("click", () => {
-    estimateForm.hidden = true;
-    estimateRow.hidden = false;
-    editEstimateButton.focus();
-  });
-
-  estimateForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!estimateForm.reportValidity()) {
-      return;
-    }
-
-    updateEstimatedTime(card, Number(estimateInput.value));
-    estimateForm.hidden = true;
-    estimateRow.hidden = false;
-    editEstimateButton.focus();
-  });
-  card.append(estimateForm);
 
   const timerPanel = document.createElement("div");
   timerPanel.className = "card-timer";
