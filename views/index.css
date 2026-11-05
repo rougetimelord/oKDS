@@ -63,6 +63,17 @@ h3 {
     font-weight: 600;
 }
 
+.storage-status {
+    position: fixed;
+    bottom: 54px;
+    left: 28px;
+    z-index: 2;
+    max-width: min(440px, calc(100vw - 56px));
+    margin: 0;
+    color: var(--color-red);
+    font-size: 0.8rem;
+}
+
 .create-card-dialog {
     position: fixed;
     inset: 50% auto auto 50%;
@@ -486,6 +497,12 @@ h3 {
     .card-count {
         bottom: 20px;
         left: 20px;
+    }
+
+    .storage-status {
+        bottom: 46px;
+        left: 20px;
+        max-width: calc(100vw - 40px);
     }
 }
 

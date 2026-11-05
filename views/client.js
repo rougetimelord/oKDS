@@ -6,9 +6,16 @@ const board = document.querySelector(".card-list");
 const rail = document.querySelector(".card-rail");
 const cardCount = document.querySelector(".card-count");
 const cardTimers = new WeakMap();
+const storageKey = "okds-tickets";
+const storageStatus = document.createElement("p");
 const dropIndicator = document.createElement("div");
 let draggedCard = null;
 let activeTimerCard = null;
+
+storageStatus.className = "storage-status";
+storageStatus.setAttribute("role", "alert");
+storageStatus.hidden = true;
+cardCount.after(storageStatus);
 
 dropIndicator.className = "drop-indicator";
 dropIndicator.setAttribute("aria-hidden", "true");
@@ -17,6 +24,33 @@ rail.append(dropIndicator);
 function updateCardCount() {
   const count = board.querySelectorAll(".card").length;
   cardCount.textContent = `${count} ${count === 1 ? "ticket" : "tickets"}`;
+}
+
+function showStorageError(message, error) {
+  console.error(message, error);
+  storageStatus.textContent = message;
+  storageStatus.hidden = false;
+}
+
+function saveTickets() {
+  const tickets = [...board.querySelectorAll(".card")].map((card) => {
+    const timer = cardTimers.get(card);
+    return {
+      title: card.querySelector("h3").textContent,
+      description: card.querySelector(".card-description")?.textContent ?? "",
+      estimatedTimeMs: timer.estimatedTimeMs,
+      remaining: timer.remaining,
+      startedAt: timer.startedAt,
+      finished: timer.finished,
+    };
+  });
+
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(tickets));
+    storageStatus.hidden = true;
+  } catch (error) {
+    showStorageError("Could not save tickets in this browser.", error);
+  }
 }
 
 addCardButton.addEventListener("click", () => {
@@ -125,6 +159,7 @@ function toggleTimer(card) {
   }
 
   renderTimer(card);
+  saveTickets();
 }
 
 function finishCard(card) {
@@ -137,6 +172,7 @@ function finishCard(card) {
 
   timer.finished = true;
   renderTimer(card);
+  saveTickets();
 }
 
 function undoFinish(card) {
@@ -147,6 +183,7 @@ function undoFinish(card) {
 
   timer.finished = false;
   renderTimer(card);
+  saveTickets();
 }
 
 async function deleteCard(card, button) {
@@ -192,6 +229,7 @@ async function deleteCard(card, button) {
     }
     card.remove();
     updateCardCount();
+    saveTickets();
     (board.querySelector(".card .timer-button") ?? addCardButton).focus();
   } catch (error) {
     console.error("Failed to archive card before deletion:", error);
@@ -259,6 +297,61 @@ function createCard(title, description, estimate) {
   return card;
 }
 
+function restoreTickets() {
+  let tickets;
+  try {
+    const savedTickets = localStorage.getItem(storageKey);
+    if (savedTickets === null) {
+      return;
+    }
+
+    tickets = JSON.parse(savedTickets);
+  } catch (error) {
+    showStorageError("Could not load saved tickets from this browser.", error);
+    return;
+  }
+
+  const isValidTicket = (ticket) => ticket
+    && typeof ticket.title === "string"
+    && ticket.title.trim().length > 0
+    && ticket.title.length <= 100
+    && typeof ticket.description === "string"
+    && ticket.description.length <= 240
+    && Number.isFinite(ticket.estimatedTimeMs)
+    && ticket.estimatedTimeMs > 0
+    && Number.isFinite(ticket.remaining)
+    && (ticket.startedAt === null || Number.isFinite(ticket.startedAt))
+    && typeof ticket.finished === "boolean"
+    && !(ticket.finished && ticket.startedAt !== null);
+
+  if (
+    !Array.isArray(tickets)
+    || !tickets.every(isValidTicket)
+    || tickets.filter((ticket) => ticket.startedAt !== null).length > 1
+  ) {
+    showStorageError("Saved tickets are invalid and could not be loaded.", new Error("Invalid saved ticket data."));
+    return;
+  }
+
+  let hadRunningTimer = false;
+  for (const ticket of tickets) {
+    const card = createCard(ticket.title, ticket.description, ticket.estimatedTimeMs / 60_000);
+    const timer = cardTimers.get(card);
+    timer.remaining = ticket.remaining;
+    if (ticket.startedAt !== null) {
+      timer.remaining -= Date.now() - ticket.startedAt;
+      hadRunningTimer = true;
+    }
+    timer.finished = ticket.finished;
+    renderTimer(card);
+    board.append(card);
+  }
+
+  if (hadRunningTimer) {
+    saveTickets();
+  }
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -282,6 +375,7 @@ form.addEventListener("submit", (event) => {
   const card = createCard(title, description, estimate);
   board.prepend(card);
   updateCardCount();
+  saveTickets();
   form.reset();
   dialog.close();
 });
@@ -369,6 +463,7 @@ rail.addEventListener("drop", (event) => {
   } else {
     board.append(draggedCard);
   }
+  saveTickets();
   hideDropIndicator();
 });
 
@@ -395,4 +490,5 @@ board.addEventListener("click", (event) => {
   }
 });
 
+restoreTickets();
 updateCardCount();
