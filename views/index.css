@@ -1,10 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
 
 :root {
+    --color-ink: #17211f;
+    --color-muted: #65736e;
+    --color-page: #f5f7f5;
+    --color-white: #fff;
+    --color-surface: #edf1ee;
+    --color-border: #e4eae6;
+    --color-green: #376e5d;
+    --color-green-hover: #2e5e4f;
+    --color-red: #a33b32;
+    --color-blue: #397caf;
     color-scheme: light;
     font-family: "DM Sans", sans-serif;
-    color: #17211f;
-    background: #f5f7f5;
+    color: var(--color-ink);
+    background: var(--color-page);
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -48,7 +58,7 @@ h3 {
     left: 28px;
     z-index: 2;
     margin: 0;
-    color: #65736e;
+    color: var(--color-muted);
     font-size: 0.8rem;
     font-weight: 600;
 }
@@ -62,14 +72,14 @@ h3 {
     margin: 0;
     padding: 24px;
     overflow-y: auto;
-    border: 1px solid #e2e9e4;
+    border: 1px solid var(--color-border);
     border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 18px 60px rgb(23 39 31 / 18%);
+    background: var(--color-white);
+    box-shadow: 0 18px 60px color-mix(in srgb, var(--color-ink) 18%, transparent);
 }
 
 .create-card-dialog::backdrop {
-    background: rgb(23 33 31 / 24%);
+    background: color-mix(in srgb, var(--color-ink) 24%, transparent);
     backdrop-filter: blur(2px);
 }
 
@@ -87,10 +97,10 @@ h3 {
     width: 34px;
     height: 34px;
     place-items: center;
-    border: 1px solid #e4eae6;
+    border: 1px solid var(--color-border);
     border-radius: 9px;
-    background: #f7f9f7;
-    color: #53615b;
+    background: var(--color-surface);
+    color: var(--color-muted);
     font: inherit;
     font-size: 1.35rem;
     line-height: 1;
@@ -98,11 +108,11 @@ h3 {
 }
 
 .dialog-close:hover {
-    background: #edf1ee;
+    background: var(--color-border);
 }
 
 .dialog-close:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 25%);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 25%, transparent);
     outline-offset: 2px;
 }
 
@@ -117,7 +127,7 @@ h3 {
 
 .form-heading p {
     margin-bottom: 0;
-    color: #77827e;
+    color: var(--color-muted);
     font-size: 0.78rem;
     line-height: 1.5;
 }
@@ -132,13 +142,13 @@ h3 {
 .form-field {
     display: grid;
     gap: 7px;
-    color: #56635e;
+    color: var(--color-muted);
     font-size: 0.74rem;
     font-weight: 600;
 }
 
 .optional-label {
-    color: #87918d;
+    color: var(--color-muted);
     font-weight: 400;
 }
 
@@ -147,21 +157,21 @@ h3 {
     min-width: 0;
     height: 40px;
     padding: 0 11px;
-    border: 1px solid #e1e7e3;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #fbfcfb;
-    color: #17211f;
+    background: var(--color-white);
+    color: var(--color-ink);
     font: inherit;
     font-size: 0.8rem;
 }
 
 .form-field input::placeholder {
-    color: #9aa39f;
+    color: var(--color-muted);
 }
 
 .form-field input:focus {
-    border-color: #709b8b;
-    outline: 3px solid rgb(112 155 139 / 15%);
+    border-color: var(--color-green);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 15%, transparent);
 }
 
 .create-button {
@@ -169,8 +179,8 @@ h3 {
     padding: 0 16px;
     border: 0;
     border-radius: 8px;
-    background: #376e5d;
-    color: #fff;
+    background: var(--color-green);
+    color: var(--color-white);
     font: inherit;
     font-size: 0.8rem;
     font-weight: 600;
@@ -179,11 +189,11 @@ h3 {
 }
 
 .create-button:hover {
-    background: #2e5e4f;
+    background: var(--color-green-hover);
 }
 
 .create-button:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 25%);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 25%, transparent);
     outline-offset: 2px;
 }
 
@@ -198,9 +208,9 @@ h3 {
     place-items: center;
     border: 0;
     border-radius: 50%;
-    background: #376e5d;
-    box-shadow: 0 8px 22px rgb(37 83 66 / 28%);
-    color: #fff;
+    background: var(--color-green);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--color-green) 28%, transparent);
+    color: var(--color-white);
     font: inherit;
     font-size: 2rem;
     font-weight: 400;
@@ -211,11 +221,11 @@ h3 {
 
 .add-card-button:hover {
     transform: translateY(-2px);
-    background: #2e5e4f;
+    background: var(--color-green-hover);
 }
 
 .add-card-button:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 30%);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 30%, transparent);
     outline-offset: 4px;
 }
 
@@ -224,10 +234,10 @@ h3 {
     width: 100vw;
     margin-left: calc(50% - 50vw);
     overflow-x: auto;
-    border: 1px solid #e8ece9;
+    border: 1px solid var(--color-border);
     border-radius: 16px;
-    background: #edf1ee;
-    scrollbar-color: #b6c4bc #edf1ee;
+    background: var(--color-surface);
+    scrollbar-color: var(--color-border) var(--color-surface);
     scrollbar-width: thin;
 }
 
@@ -238,7 +248,7 @@ h3 {
     z-index: 3;
     width: 2px;
     border-radius: 999px;
-    background: rgb(55 110 93 / 55%);
+    background: color-mix(in srgb, var(--color-green) 55%, transparent);
     opacity: 0;
     pointer-events: none;
     transform: translateX(-50%);
@@ -261,7 +271,7 @@ h3 {
 }
 
 .card-list.is-drag-over {
-    background: rgb(203 216 207 / 25%);
+    background: color-mix(in srgb, var(--color-green) 10%, transparent);
 }
 
 .card {
@@ -269,10 +279,10 @@ h3 {
     z-index: 1;
     flex: 0 0 250px;
     padding: 18px;
-    border: 1px solid #e9eeeb;
+    border: 1px solid var(--color-border);
     border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 3px 8px rgb(34 53 45 / 3%);
+    background: var(--color-white);
+    box-shadow: 0 3px 8px color-mix(in srgb, var(--color-ink) 3%, transparent);
     cursor: grab;
 }
 
@@ -281,7 +291,7 @@ h3 {
 }
 
 .card:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 25%);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 25%, transparent);
     outline-offset: 2px;
 }
 
@@ -298,14 +308,14 @@ h3 {
 
 .card p {
     margin-bottom: 0;
-    color: #77827e;
+    color: var(--color-muted);
     font-size: 0.82rem;
     line-height: 1.55;
 }
 
 .card .card-error {
     margin: 12px 0 0;
-    color: #a42f26;
+    color: var(--color-red);
     font-size: 0.75rem;
     line-height: 1.45;
 }
@@ -315,16 +325,16 @@ h3 {
     margin-top: 12px;
     padding: 5px 8px;
     border-radius: 6px;
-    background: #f0f4f1;
-    color: #52665d;
+    background: var(--color-surface);
+    color: var(--color-muted);
     font-size: 0.72rem;
     font-weight: 600;
 }
 
 .card.is-overdue {
-    border-color: #e9aaa4;
-    background: #fff0ef;
-    box-shadow: 0 3px 8px rgb(146 48 41 / 8%);
+    border-color: color-mix(in srgb, var(--color-red) 45%, var(--color-white));
+    background: color-mix(in srgb, var(--color-red) 7%, var(--color-white));
+    box-shadow: 0 3px 8px color-mix(in srgb, var(--color-red) 8%, transparent);
 }
 
 .card-timer {
@@ -334,35 +344,18 @@ h3 {
     gap: 12px;
     margin-top: 16px;
     padding-top: 14px;
-    border-top: 1px solid #edf0ee;
+    border-top: 1px solid var(--color-border);
 }
 
 .timer-display {
-    color: #34443d;
+    color: var(--color-ink);
     font-variant-numeric: tabular-nums;
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.04em;
 }
 
-.timer-button {
-    display: grid;
-    flex: 0 0 36px;
-    width: 36px;
-    height: 36px;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: #376e5d;
-    color: #fff;
-    font: inherit;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-}
-
+.timer-button,
 .finish-button {
     display: grid;
     flex: 0 0 36px;
@@ -372,21 +365,32 @@ h3 {
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: #e9efeb;
-    color: #376e5d;
     font: inherit;
-    font-size: 1.15rem;
-    font-weight: 700;
     line-height: 1;
     cursor: pointer;
 }
 
-.finish-button:hover {
-    background: #dce8e0;
+.timer-button {
+    background: var(--color-green);
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 600;
 }
 
+.finish-button {
+    background: var(--color-surface);
+    color: var(--color-green);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.finish-button:hover {
+    background: color-mix(in srgb, var(--color-green) 12%, var(--color-white));
+}
+
+.timer-button:focus-visible,
 .finish-button:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 25%);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 25%, transparent);
     outline-offset: 2px;
 }
 
@@ -397,59 +401,51 @@ h3 {
 }
 
 .timer-button:hover {
-    background: #2e5e4f;
-}
-
-.timer-button:focus-visible {
-    outline: 3px solid rgb(55 110 93 / 25%);
-    outline-offset: 2px;
+    background: var(--color-green-hover);
 }
 
 .card.is-overdue .timer-display {
-    color: #a42f26;
+    color: var(--color-red);
 }
 
 .card.is-overdue .card-timer {
-    border-color: #f0ccc8;
+    border-color: color-mix(in srgb, var(--color-red) 20%, var(--color-white));
 }
 
 .card.is-overdue .timer-button {
-    background: #a33b32;
+    background: var(--color-red);
 }
 
-.card.is-overdue .timer-button:hover {
-    background: #872e27;
+.card.is-overdue .timer-button:hover,
+.card.is-finished .timer-button:hover {
+    background: color-mix(in srgb, var(--color-red) 80%, var(--color-ink));
 }
 
 .card.is-finished {
-    border-color: #9dc5e9;
-    background: #e6f3ff;
-    box-shadow: 0 3px 8px rgb(38 94 145 / 10%);
+    border-color: color-mix(in srgb, var(--color-blue) 45%, var(--color-white));
+    background: color-mix(in srgb, var(--color-blue) 9%, var(--color-white));
+    box-shadow: 0 3px 8px color-mix(in srgb, var(--color-blue) 10%, transparent);
 }
 
 .card.is-finished .card-timer {
-    border-color: #c6ddf1;
+    border-color: color-mix(in srgb, var(--color-blue) 22%, var(--color-white));
 }
 
 .card.is-finished .timer-display {
-    color: #245d8b;
+    color: var(--color-blue);
 }
 
 .card.is-finished .timer-button {
-    background: #a33b32;
-}
-
-.card.is-finished .timer-button:hover {
-    background: #872e27;
+    background: var(--color-red);
 }
 
 .card.is-finished .finish-button {
-    background: #397caf;
-    color: #fff;
+    background: var(--color-blue);
+    color: var(--color-white);
 }
 
 .card.is-finished .finish-button:hover {
-    background: #2e6796;
+    background: color-mix(in srgb, var(--color-blue) 80%, var(--color-ink));
 }
 
 @media (max-width: 760px) {
