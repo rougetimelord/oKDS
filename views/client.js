@@ -115,6 +115,8 @@ function toggleTimer(card) {
       pauseTimer(activeTimerCard);
     }
 
+    board.append(card);
+    rail.scrollTo({ left: rail.scrollWidth, behavior: "smooth" });
     timer.startedAt = Date.now();
     timer.intervalId = window.setInterval(() => renderTimer(card), 200);
     activeTimerCard = card;
@@ -278,9 +280,8 @@ form.addEventListener("submit", (event) => {
 
   const description = formData.get("description").trim();
   const card = createCard(title, description, estimate);
-  board.append(card);
+  board.prepend(card);
   updateCardCount();
-  card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "end" });
   form.reset();
   dialog.close();
 });
