@@ -274,11 +274,12 @@ h3 {
     position: relative;
     display: flex;
     align-items: stretch;
+    justify-content: flex-end;
     gap: 20px;
     width: max-content;
     min-width: 100%;
     min-height: 300px;
-    padding: 0 24px;
+    padding: 0;
 }
 
 .card-list.is-drag-over {
@@ -469,7 +470,7 @@ h3 {
 @media (max-width: 760px) {
     .board {
         width: min(560px, calc(100% - 32px));
-        padding: 40px 0;
+        padding: 40px 0px;
     }
 
     .create-card-dialog {
@@ -484,7 +485,7 @@ h3 {
 
     .card-list {
         min-height: 260px;
-        padding: 0 16px;
+        padding: 0;
     }
 
     .add-card-button {
