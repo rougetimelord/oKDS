@@ -52,15 +52,26 @@ h3 {
     font-family: "Manrope", sans-serif;
 }
 
-.card-count {
+.card-summary {
     position: fixed;
     bottom: 28px;
     left: 28px;
     z-index: 2;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.card-count,
+.card-total-time {
     margin: 0;
     color: var(--color-muted);
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+.card-total-time {
+    font-variant-numeric: tabular-nums;
 }
 
 .storage-status {
@@ -495,7 +506,7 @@ h3 {
         height: 56px;
     }
 
-    .card-count {
+    .card-summary {
         bottom: 20px;
         left: 20px;
     }

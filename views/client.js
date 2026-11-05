@@ -5,6 +5,7 @@ const closeDialogButton = document.querySelector(".dialog-close");
 const board = document.querySelector(".card-list");
 const rail = document.querySelector(".card-rail");
 const cardCount = document.querySelector(".card-count");
+const cardTotalTime = document.querySelector(".card-total-time");
 const cardTimers = new WeakMap();
 const storageKey = "okds-tickets";
 const storageStatus = document.createElement("p");
@@ -24,6 +25,16 @@ rail.append(dropIndicator);
 function updateCardCount() {
   const count = board.querySelectorAll(".card").length;
   cardCount.textContent = `${count} ${count === 1 ? "ticket" : "tickets"}`;
+  updateCardTotalTime();
+}
+
+function updateCardTotalTime() {
+  const totalTime = [...board.querySelectorAll(".card")].reduce((total, card) => {
+    const timer = cardTimers.get(card);
+    const remaining = getRemainingTime(timer);
+    return total + (timer.finished ? timer.estimatedTimeMs - remaining : remaining);
+  }, 0);
+  cardTotalTime.textContent = `Total: ${formatTime(totalTime)}`;
 }
 
 function scrollRailToEnd(behavior = "auto") {
@@ -118,6 +129,7 @@ function renderTimer(card) {
     "aria-label",
     timer.finished ? `Undo finish for ${title}` : `Mark ${title} as finished`,
   );
+  updateCardTotalTime();
 }
 
 function getRemainingTime(timer) {
