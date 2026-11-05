@@ -169,6 +169,8 @@ async function deleteCard(card, button) {
       body: JSON.stringify({
         title: card.querySelector("h3").textContent,
         description: card.querySelector(".card-description")?.textContent ?? "",
+        estimatedTimeMs: timer.estimatedTimeMs,
+        totalTimeTakenMs: timer.estimatedTimeMs - getRemainingTime(timer),
         timeRemainingMs: getRemainingTime(timer),
       }),
     });
@@ -242,6 +244,7 @@ function createCard(title, description, estimate) {
 
   cardTimers.set(card, {
     remaining: estimate * 60 * 1000,
+    estimatedTimeMs: estimate * 60 * 1000,
     startedAt: null,
     intervalId: null,
     finished: false,

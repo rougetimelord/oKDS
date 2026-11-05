@@ -5,7 +5,7 @@ const path = require("node:path");
 const port = Number(process.env.PORT) || 3000;
 const app = express();
 const archivePath = path.join(__dirname, "data", "deleted-cards.csv");
-const archiveHeader = "timestamp,title,description,time_remaining_ms\n";
+const archiveHeader = "timestamp,title,description,estimated_time_ms,total_time_taken_ms,time_remaining_ms\n";
 
 function escapeCsv(value) {
   return `"${String(value).replaceAll('"', '""')}"`;
@@ -26,13 +26,25 @@ const archiveReady = fs.mkdir(path.dirname(archivePath), { recursive: true })
 app.use(express.json({ limit: "10kb" }));
 
 app.post("/api/deleted-cards", async (request, response) => {
-  const { title, description, timeRemainingMs } = request.body ?? {};
+  const {
+    title,
+    description,
+    estimatedTimeMs,
+    totalTimeTakenMs,
+    timeRemainingMs,
+  } = request.body ?? {};
   if (
     typeof title !== "string"
     || !title.trim()
     || title.length > 100
     || typeof description !== "string"
     || description.length > 240
+    || typeof estimatedTimeMs !== "number"
+    || !Number.isFinite(estimatedTimeMs)
+    || estimatedTimeMs <= 0
+    || typeof totalTimeTakenMs !== "number"
+    || !Number.isFinite(totalTimeTakenMs)
+    || totalTimeTakenMs < 0
     || typeof timeRemainingMs !== "number"
     || !Number.isFinite(timeRemainingMs)
   ) {
@@ -44,6 +56,8 @@ app.post("/api/deleted-cards", async (request, response) => {
     new Date().toISOString(),
     title,
     description,
+    estimatedTimeMs,
+    totalTimeTakenMs,
     timeRemainingMs,
   ].map(escapeCsv).join(",");
 
