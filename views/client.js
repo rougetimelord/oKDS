@@ -26,6 +26,10 @@ function updateCardCount() {
   cardCount.textContent = `${count} ${count === 1 ? "ticket" : "tickets"}`;
 }
 
+function scrollRailToEnd(behavior = "auto") {
+  rail.scrollTo({ left: rail.scrollWidth, behavior });
+}
+
 function showStorageError(message, error) {
   console.error(message, error);
   storageStatus.textContent = message;
@@ -150,7 +154,7 @@ function toggleTimer(card) {
     }
 
     board.append(card);
-    rail.scrollTo({ left: rail.scrollWidth, behavior: "smooth" });
+    scrollRailToEnd("smooth");
     timer.startedAt = Date.now();
     timer.intervalId = window.setInterval(() => renderTimer(card), 200);
     activeTimerCard = card;
@@ -347,6 +351,8 @@ function restoreTickets() {
     board.append(card);
   }
 
+  scrollRailToEnd();
+
   if (hadRunningTimer) {
     saveTickets();
   }
@@ -376,6 +382,7 @@ form.addEventListener("submit", (event) => {
   board.prepend(card);
   updateCardCount();
   saveTickets();
+  scrollRailToEnd();
   form.reset();
   dialog.close();
 });
@@ -464,6 +471,7 @@ rail.addEventListener("drop", (event) => {
     board.append(draggedCard);
   }
   saveTickets();
+  scrollRailToEnd();
   hideDropIndicator();
 });
 
@@ -489,6 +497,8 @@ board.addEventListener("click", (event) => {
     }
   }
 });
+
+window.addEventListener("resize", () => scrollRailToEnd());
 
 restoreTickets();
 updateCardCount();
