@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oKDS</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <main class="board">
+        <p class="card-count" aria-live="polite">0 Tickets</p>
+        <section class="card-rail" aria-label="Card rail">
+            <div class="card-list" data-card-list aria-label="Cards"></div>
+        </section>
+    </main>
+
+    <dialog class="create-card-dialog" id="create-card-dialog" aria-labelledby="create-card-title">
+        <div class="dialog-header">
+            <div class="form-heading">
+                <h2 id="create-card-title">Create a card</h2>
+                <p>Add a task to the rail.</p>
+            </div>
+            <button class="dialog-close" type="button" aria-label="Close card form">&times;</button>
+        </div>
+        <form class="create-card-form" id="create-card-form">
+            <div class="form-fields">
+                <label class="form-field">
+                    <span>Title <span aria-hidden="true">*</span></span>
+                    <input name="title" type="text" placeholder="What needs to be done?" required maxlength="100">
+                </label>
+                <label class="form-field estimate-field">
+                    <span>Estimated time (minutes) <span aria-hidden="true">*</span></span>
+                    <input name="estimate" type="number" placeholder="30" min="1" step="1" required>
+                </label>
+                <label class="form-field description-field">
+                    <span>Description <span class="optional-label">(optional)</span></span>
+                    <input name="description" type="text" placeholder="Add a short description" maxlength="240">
+                </label>
+                <button class="create-button" type="submit">Add card</button>
+            </div>
+        </form>
+    </dialog>
+
+    <button class="add-card-button" type="button" aria-label="Create a card" aria-haspopup="dialog" aria-controls="create-card-dialog">+</button>
+    <script src="/client.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+
+:root {
+    color-scheme: light;
+    font-family: "DM Sans", sans-serif;
+    color: #17211f;
+    background: #f5f7f5;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.board {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    width: min(1120px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 24px 0;
+}
+
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h2,
+h3 {
+    font-family: "Manrope", sans-serif;
+}
+
+.card-count {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 2;
+    margin: 0;
+    color: #65736e;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.create-card-dialog {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: min(520px, calc(100vw - 48px));
+    max-height: calc(100vh - 48px);
+    margin: 0;
+    padding: 24px;
+    overflow-y: auto;
+    border: 1px solid #e2e9e4;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 18px 60px rgb(23 39 31 / 18%);
+}
+
+.create-card-dialog::backdrop {
+    background: rgb(23 33 31 / 24%);
+    backdrop-filter: blur(2px);
+}
+
+.dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.dialog-close {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid #e4eae6;
+    border-radius: 9px;
+    background: #f7f9f7;
+    color: #53615b;
+    font: inherit;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.dialog-close:hover {
+    background: #edf1ee;
+}
+
+.dialog-close:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 25%);
+    outline-offset: 2px;
+}
+
+.create-card-form {
+    margin: 0;
+}
+
+.form-heading h2 {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.form-heading p {
+    margin-bottom: 0;
+    color: #77827e;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.form-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 16px 12px;
+}
+
+.form-field {
+    display: grid;
+    gap: 7px;
+    color: #56635e;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.optional-label {
+    color: #87918d;
+    font-weight: 400;
+}
+
+.form-field input {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 0 11px;
+    border: 1px solid #e1e7e3;
+    border-radius: 8px;
+    background: #fbfcfb;
+    color: #17211f;
+    font: inherit;
+    font-size: 0.8rem;
+}
+
+.form-field input::placeholder {
+    color: #9aa39f;
+}
+
+.form-field input:focus {
+    border-color: #709b8b;
+    outline: 3px solid rgb(112 155 139 / 15%);
+}
+
+.create-button {
+    height: 40px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #376e5d;
+    color: #fff;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.create-button:hover {
+    background: #2e5e4f;
+}
+
+.create-button:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 25%);
+    outline-offset: 2px;
+}
+
+.add-card-button {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    z-index: 2;
+    display: grid;
+    width: 60px;
+    height: 60px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #376e5d;
+    box-shadow: 0 8px 22px rgb(37 83 66 / 28%);
+    color: #fff;
+    font: inherit;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 120ms ease, transform 120ms ease;
+}
+
+.add-card-button:hover {
+    transform: translateY(-2px);
+    background: #2e5e4f;
+}
+
+.add-card-button:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 30%);
+    outline-offset: 4px;
+}
+
+.card-rail {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow-x: auto;
+    border: 1px solid #e8ece9;
+    border-radius: 16px;
+    background: #edf1ee;
+    scrollbar-color: #b6c4bc #edf1ee;
+    scrollbar-width: thin;
+}
+
+.drop-indicator {
+    position: absolute;
+    top: 36px;
+    bottom: 36px;
+    z-index: 3;
+    width: 2px;
+    border-radius: 999px;
+    background: rgb(55 110 93 / 55%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: opacity 100ms ease;
+}
+
+.drop-indicator.is-visible {
+    opacity: 1;
+}
+
+.card-list {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: max-content;
+    min-width: 100%;
+    min-height: 300px;
+    padding: 30px 24px;
+}
+
+.card-list.is-drag-over {
+    background: rgb(203 216 207 / 25%);
+}
+
+.card {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 250px;
+    padding: 18px;
+    border: 1px solid #e9eeeb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgb(34 53 45 / 3%);
+    cursor: grab;
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+.card:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 25%);
+    outline-offset: 2px;
+}
+
+.card.is-dragging {
+    opacity: 0.45;
+}
+
+.card h3 {
+    margin-bottom: 7px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.card p {
+    margin-bottom: 0;
+    color: #77827e;
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.card .card-error {
+    margin: 12px 0 0;
+    color: #a42f26;
+    font-size: 0.75rem;
+    line-height: 1.45;
+}
+
+.card .card-estimate {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #f0f4f1;
+    color: #52665d;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.card.is-overdue {
+    border-color: #e9aaa4;
+    background: #fff0ef;
+    box-shadow: 0 3px 8px rgb(146 48 41 / 8%);
+}
+
+.card-timer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #edf0ee;
+}
+
+.timer-display {
+    color: #34443d;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.timer-button {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #376e5d;
+    color: #fff;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.finish-button {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #e9efeb;
+    color: #376e5d;
+    font: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.finish-button:hover {
+    background: #dce8e0;
+}
+
+.finish-button:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 25%);
+    outline-offset: 2px;
+}
+
+.timer-button:disabled,
+.finish-button:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.timer-button:hover {
+    background: #2e5e4f;
+}
+
+.timer-button:focus-visible {
+    outline: 3px solid rgb(55 110 93 / 25%);
+    outline-offset: 2px;
+}
+
+.card.is-overdue .timer-display {
+    color: #a42f26;
+}
+
+.card.is-overdue .card-timer {
+    border-color: #f0ccc8;
+}
+
+.card.is-overdue .timer-button {
+    background: #a33b32;
+}
+
+.card.is-overdue .timer-button:hover {
+    background: #872e27;
+}
+
+.card.is-finished {
+    border-color: #9dc5e9;
+    background: #e6f3ff;
+    box-shadow: 0 3px 8px rgb(38 94 145 / 10%);
+}
+
+.card.is-finished .card-timer {
+    border-color: #c6ddf1;
+}
+
+.card.is-finished .timer-display {
+    color: #245d8b;
+}
+
+.card.is-finished .timer-button {
+    background: #a33b32;
+}
+
+.card.is-finished .timer-button:hover {
+    background: #872e27;
+}
+
+.card.is-finished .finish-button {
+    background: #397caf;
+    color: #fff;
+}
+
+.card.is-finished .finish-button:hover {
+    background: #2e6796;
+}
+
+@media (max-width: 760px) {
+    .board {
+        width: min(560px, calc(100% - 32px));
+        padding: 40px 0;
+    }
+
+    .create-card-dialog {
+        width: calc(100vw - 32px);
+        max-height: calc(100vh - 32px);
+        padding: 20px;
+    }
+
+    .description-field {
+        grid-column: 1 / -1;
+    }
+
+    .card-list {
+        min-height: 260px;
+        padding: 24px 16px;
+    }
+
+    .add-card-button {
+        right: 20px;
+        bottom: 20px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .card-count {
+        bottom: 20px;
+        left: 20px;
+    }
+}
+
+@media (max-width: 420px) {
+    .board {
+        width: calc(100% - 28px);
+        padding-top: 32px;
+    }
+
+    .create-card-dialog {
+        padding: 18px;
+    }
+
+    .form-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .description-field {
+        grid-column: auto;
+    }
+
+    .create-button {
+        width: 100%;
+    }
+}
