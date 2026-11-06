@@ -330,7 +330,39 @@ h3 {
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: -0.025em;
-    cursor: text;
+}
+
+.ticket-title,
+.card .card-description {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 3px 4px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+
+.ticket-title {
+    font-family: "Manrope", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.ticket-title:hover,
+.card .card-description:hover {
+    border-color: var(--color-border);
+}
+
+.ticket-title:focus,
+.card .card-description:focus {
+    border-color: var(--color-green);
+    background: var(--color-white);
+    outline: 3px solid color-mix(in srgb, var(--color-green) 15%, transparent);
 }
 
 .card p {
@@ -342,65 +374,14 @@ h3 {
 
 .card .card-description {
     min-height: 1.55em;
-    cursor: text;
-}
-
-.card .card-description:empty::before {
-    color: var(--color-muted);
-    content: "Click to add a description";
-    opacity: 0.75;
-}
-
-.ticket-inline-edit-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    align-items: start;
-    gap: 6px;
-    margin: 0 0 7px;
-}
-
-.ticket-inline-edit-form[hidden] {
-    display: none;
-}
-
-.ticket-inline-edit-form input,
-.ticket-inline-edit-form textarea {
-    width: 100%;
-    min-width: 0;
-    padding: 6px 8px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    color: var(--color-ink);
-    font: inherit;
-    font-size: 0.78rem;
-}
-
-.ticket-inline-edit-form textarea {
-    grid-column: 1 / -1;
     resize: vertical;
+    font-size: 0.82rem;
+    line-height: 1.55;
 }
 
-.ticket-inline-edit-form input:focus,
-.ticket-inline-edit-form textarea:focus {
-    border-color: var(--color-green);
-    outline: 3px solid color-mix(in srgb, var(--color-green) 15%, transparent);
-}
-
-.ticket-inline-edit-form button {
-    min-height: 30px;
-    padding: 0 8px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background: var(--color-white);
+.card .card-description::placeholder {
     color: var(--color-muted);
-    font: inherit;
-    font-size: 0.7rem;
-    cursor: pointer;
-}
-
-.ticket-inline-edit-form button:hover {
-    border-color: var(--color-green);
-    color: var(--color-green);
+    opacity: 0.75;
 }
 
 .card .card-error {

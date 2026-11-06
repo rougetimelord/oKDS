@@ -52,8 +52,8 @@ function saveTickets() {
   const tickets = [...board.querySelectorAll(".card")].map((card) => {
     const timer = cardTimers.get(card);
     return {
-      title: card.querySelector("h3").textContent,
-      description: card.querySelector(".card-description")?.textContent ?? "",
+      title: card.querySelector(".ticket-title").value.trim(),
+      description: card.querySelector(".card-description").value.trim(),
       estimatedTimeMs: timer.estimatedTimeMs,
       remaining: timer.remaining,
       startedAt: timer.startedAt,
@@ -105,7 +105,7 @@ function renderTimer(card) {
   const remaining = getRemainingTime(timer);
   const active = timer.startedAt !== null;
   const button = card.querySelector(".timer-button");
-  const title = card.querySelector("h3").textContent;
+  const title = card.querySelector(".ticket-title").value.trim();
   const finishButton = card.querySelector(".finish-button");
   const timerDisplay = card.querySelector(".timer-display");
 
@@ -154,7 +154,7 @@ function updateEstimatedTime(card, estimateMinutes) {
 
   const estimateLabel = `${estimateMinutes} ${estimateMinutes === 1 ? "minute" : "minutes"}`;
   card.querySelector(".card-estimate").textContent = `${estimateLabel} estimated`;
-  card.setAttribute("aria-label", `${card.querySelector("h3").textContent}, estimated ${estimateLabel}`);
+  card.setAttribute("aria-label", `${card.querySelector(".ticket-title").value.trim()}, estimated ${estimateLabel}`);
   renderTimer(card);
   saveTickets();
 }
@@ -246,8 +246,8 @@ async function deleteCard(card, button) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: card.querySelector("h3").textContent,
-        description: card.querySelector(".card-description")?.textContent ?? "",
+        title: card.querySelector(".ticket-title").value.trim(),
+        description: card.querySelector(".card-description").value.trim(),
         estimatedTimeMs: timer.estimatedTimeMs,
         totalTimeTakenMs: timer.estimatedTimeMs - getRemainingTime(timer),
         timeRemainingMs: getRemainingTime(timer),
@@ -349,16 +349,6 @@ function createEditor(display, options, onSave) {
   return { form: editorForm, input, open };
 }
 
-function enableClickEditing(element, openEditor) {
-  element.addEventListener("click", openEditor);
-  element.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openEditor();
-    }
-  });
-}
-
 function createCard(title, description, estimate) {
   const card = document.createElement("article");
   card.className = "card";
@@ -368,52 +358,45 @@ function createCard(title, description, estimate) {
   card.setAttribute("aria-label", `${title}, estimated ${estimateLabel}`);
 
   const heading = document.createElement("h3");
-  heading.textContent = title;
-  heading.tabIndex = 0;
-  heading.setAttribute("aria-label", `Edit title: ${title}`);
+  const titleInput = document.createElement("input");
+  titleInput.className = "ticket-title";
+  titleInput.type = "text";
+  titleInput.maxLength = 100;
+  titleInput.required = true;
+  titleInput.value = title;
+  titleInput.setAttribute("aria-label", "Ticket title");
+  heading.append(titleInput);
   card.append(heading);
 
-  const details = document.createElement("p");
-  details.className = "card-description";
-  details.textContent = description;
-  details.tabIndex = 0;
-  details.setAttribute("aria-label", description ? "Edit description" : "Add a description");
-  card.append(details);
+  const descriptionInput = document.createElement("textarea");
+  descriptionInput.className = "card-description";
+  descriptionInput.maxLength = 240;
+  descriptionInput.rows = 3;
+  descriptionInput.value = description;
+  descriptionInput.placeholder = "Add a description";
+  descriptionInput.setAttribute("aria-label", `Description for ${title}`);
+  card.append(descriptionInput);
 
-  const titleEditor = createEditor(heading, {
-    className: "ticket-inline-edit-form ticket-title-edit-form",
-    label: `Ticket title for ${title}`,
-    maxLength: 100,
-    requiredMessage: "Please enter a title.",
-  }, (newTitle) => {
-    heading.textContent = newTitle;
-    heading.setAttribute("aria-label", `Edit title: ${newTitle}`);
+  let lastValidTitle = title;
+  titleInput.addEventListener("input", () => {
+    const newTitle = titleInput.value.trim();
+    titleInput.setCustomValidity(newTitle ? "" : "Please enter a title.");
+    if (!newTitle) return;
+
+    lastValidTitle = newTitle;
     const minutes = cardTimers.get(card).estimatedTimeMs / 60_000;
     card.setAttribute("aria-label", `${newTitle}, estimated ${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
-    details.setAttribute("aria-label", details.textContent ? "Edit description" : "Add a description");
-    descriptionEditor.input.setAttribute("aria-label", `Description for ${newTitle}`);
+    descriptionInput.setAttribute("aria-label", `Description for ${newTitle}`);
     editEstimateButton.setAttribute("aria-label", `Edit estimated time for ${newTitle}`);
     renderTimer(card);
     saveTickets();
   });
-  card.append(titleEditor.form);
-  enableClickEditing(heading, () => titleEditor.open(heading.textContent));
-
-  const descriptionEditor = createEditor(details, {
-    className: "ticket-inline-edit-form ticket-description-edit-form",
-    label: `Description for ${title}`,
-    maxLength: 240,
-    multiline: true,
-  }, (newDescription) => {
-    details.textContent = newDescription;
-    details.setAttribute("aria-label", newDescription ? "Edit description" : "Add a description");
+  titleInput.addEventListener("blur", () => {
+    titleInput.value = titleInput.value.trim() || lastValidTitle;
+    titleInput.setCustomValidity("");
     saveTickets();
   });
-  card.append(descriptionEditor.form);
-  enableClickEditing(details, () => descriptionEditor.open(details.textContent));
-  card.addEventListener("click", (event) => {
-    if (event.target === card) descriptionEditor.open(details.textContent);
-  });
+  descriptionInput.addEventListener("input", saveTickets);
 
   const time = document.createElement("span");
   time.className = "card-estimate";
@@ -567,7 +550,7 @@ form.addEventListener("submit", (event) => {
 
 board.addEventListener("dragstart", (event) => {
   if (event.target.closest(
-    ".timer-button, .finish-button, .estimate-edit-button, .estimate-edit-form, .ticket-inline-edit-form",
+    ".timer-button, .finish-button, .estimate-edit-button, .estimate-edit-form, .ticket-title, .card-description",
   )) {
     event.preventDefault();
     return;
@@ -581,7 +564,7 @@ board.addEventListener("dragstart", (event) => {
   draggedCard = card;
   card.classList.add("is-dragging");
   event.dataTransfer.effectAllowed = "move";
-  event.dataTransfer.setData("text/plain", card.querySelector("h3").textContent);
+  event.dataTransfer.setData("text/plain", card.querySelector(".ticket-title").value);
 });
 
 function getDropPosition(clientX) {
