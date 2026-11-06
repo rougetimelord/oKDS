@@ -264,10 +264,24 @@ async function deleteCard(card, button) {
     if (activeTimerCard === card) {
       activeTimerCard = null;
     }
+    const railLeft = rail.getBoundingClientRect().left;
+    const visibleCard = [...board.querySelectorAll(".card")]
+      .filter((candidate) => candidate !== card)
+      .find((candidate) => {
+        const bounds = candidate.getBoundingClientRect();
+        return bounds.right > railLeft && bounds.left < railLeft + rail.clientWidth;
+      });
+    const visibleCardLeft = visibleCard?.getBoundingClientRect().left;
+    const scrollLeft = rail.scrollLeft;
     card.remove();
+    if (visibleCard) {
+      rail.scrollLeft += visibleCard.getBoundingClientRect().left - visibleCardLeft;
+    } else {
+      rail.scrollLeft = scrollLeft;
+    }
     updateCardCount();
     saveTickets();
-    (board.querySelector(".card .timer-button") ?? addCardButton).focus();
+    (board.querySelector(".card .timer-button") ?? addCardButton).focus({ preventScroll: true });
   } catch (error) {
     console.error("Failed to archive card before deletion:", error);
     errorMessage.textContent = `Could not save this card before deletion. ${error.message}`;
