@@ -33,9 +33,10 @@ function updateCardTotalTime() {
   const totalTime = [...board.querySelectorAll(".card")].reduce((total, card) => {
     const timer = cardTimers.get(card);
     const remaining = getRemainingTime(timer);
-    return total + (timer.finished ? timer.estimatedTimeMs - remaining : remaining);
+    return total + (timer.finished ? 0 : remaining > 0 ? remaining : timer.estimatedTimeMs);
   }, 0);
-  cardTotalTime.textContent = `Total: ${formatTime(totalTime)}`;
+  const anyOverdue = [...board.querySelectorAll(".card")].some((card) => cardTimers.get(card).remaining < 0);
+  cardTotalTime.textContent = `Total: ${formatTime(totalTime)}${anyOverdue ? "+":""}`;
 }
 
 function scrollRailToEnd(behavior = "auto") {
@@ -660,8 +661,6 @@ board.addEventListener("click", (event) => {
     }
   }
 });
-
-window.addEventListener("resize", () => scrollRailToEnd());
 
 restoreTickets();
 updateCardCount();
